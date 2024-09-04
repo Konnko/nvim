@@ -14,3 +14,47 @@ map("v", "x", '"_x', options)
 map("v", "X", '"_X', options)
 map("n", "x", '"_x', options)
 map("n", "X", '"_X', options)
+
+local lspconfig = require "lspconfig"
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+lspconfig.tailwindcss.setup {
+  capabilities = capabilities,
+  filetypes = { "html", "elixir", "eelixir", "heex" },
+  init_options = {
+    userLanguages = {
+      elixir = "html-eex",
+      eelixir = "html-eex",
+      heex = "html-eex",
+    },
+  },
+  settings = {
+    tailwindCSS = {
+      experimental = {
+        classRegex = {
+          'class[:]\\s*"([^"]*)"',
+        },
+      },
+    },
+  },
+}
+
+lspconfig.emmet_ls.setup {
+  capabilities = capabilities,
+  filetypes = { "html", "css", "elixir", "eelixir", "heex" },
+}
+
+local cmp = require "cmp"
+
+-- `/` cmdline setup.
+cmp.setup.cmdline("/", {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = "buffer" },
+  },
+})
+
+cmp.setup.cmdline(":", {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = { { name = "path" }, { name = "cmdline" } },
+})
