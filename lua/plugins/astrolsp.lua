@@ -1,5 +1,3 @@
--- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
 -- AstroLSP allows you to customize the features in AstroNvim's LSP configuration engine
 -- Configuration documentation can be found with `:h astrolsp`
 -- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
@@ -29,12 +27,7 @@ return {
           -- "python",
         },
       },
-      disabled = {
-        "eslint",
-        -- disable formatting capabilities for the listed language servers
-        -- disable lua_ls formatting capability if you want to use StyLua to format your lua code
-        "lua_ls",
-      },
+      disabled = {},
       timeout_ms = 1000, -- default format timeout
       -- filter = function(client) -- fully override the default formatting function
       --   return true
@@ -96,6 +89,10 @@ return {
           desc = "Toggle LSP semantic highlight (buffer)",
           cond = function(client) return client.server_capabilities.semanticTokensProvider and vim.lsp.semantic_tokens end,
         },
+      },
+      t = {
+        -- setting a mapping to false will disable it
+        -- ["<esc>"] = false,
       },
     },
     -- A custom `on_attach` function to be run after the default `on_attach` function

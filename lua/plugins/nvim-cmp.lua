@@ -1,4 +1,5 @@
 return {
+  { "onsails/lspkind.nvim", version = "*" },
   { -- override nvim-cmp plugin
     "hrsh7th/nvim-cmp",
     dependencies = {
@@ -18,7 +19,7 @@ return {
           before = require("tailwind-tools.cmp").lspkind_format,
         },
       }
+      opts.mapping["<Tab>"] = nil
     end,
   },
-  { "onsails/lspkind.nvim", version = "*" },
 }

@@ -33,6 +33,7 @@ return {
     cmp = {
       highlight = "foreground", -- color preview style, "foreground" | "background"
     },
+
     telescope = {
       utilities = {
         callback = function(name, class) end, -- callback used when selecting an utility class in telescope
