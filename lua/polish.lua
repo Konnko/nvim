@@ -58,3 +58,5 @@ cmp.setup.cmdline(":", {
   mapping = cmp.mapping.preset.cmdline(),
   sources = { { name = "path" }, { name = "cmdline" } },
 })
+
+vim.o.guifont = "RobotoMono Nerd Font Mono:h17"

@@ -18,6 +18,7 @@ return {
           before = require("tailwind-tools.cmp").lspkind_format,
         },
       }
+      opts.mapping["<Tab>"] = nil
     end,
   },
   { "onsails/lspkind.nvim", version = "*" },

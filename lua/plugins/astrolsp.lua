@@ -30,10 +30,7 @@ return {
         },
       },
       disabled = {
-        "eslint",
         -- disable formatting capabilities for the listed language servers
-        -- disable lua_ls formatting capability if you want to use StyLua to format your lua code
-        "lua_ls",
       },
       timeout_ms = 1000, -- default format timeout
       -- filter = function(client) -- fully override the default formatting function
@@ -96,6 +93,10 @@ return {
           desc = "Toggle LSP semantic highlight (buffer)",
           cond = function(client) return client.server_capabilities.semanticTokensProvider and vim.lsp.semantic_tokens end,
         },
+      },
+      t = {
+        -- setting a mapping to false will disable it
+        -- ["<esc>"] = false,
       },
     },
     -- A custom `on_attach` function to be run after the default `on_attach` function
