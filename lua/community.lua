@@ -11,7 +11,6 @@ return {
 
   -- { import = "astrocommunity.completion.copilot-lua-cmp" },
   { import = "astrocommunity.project.project-nvim" },
-  { import = "astrocommunity.editing-support.rainbow-delimiters-nvim" },
   { import = "astrocommunity.editing-support.telescope-undo-nvim" },
   { import = "astrocommunity.editing-support.wildfire-nvim" },
   { import = "astrocommunity.colorscheme.catppuccin" },
