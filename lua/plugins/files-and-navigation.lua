@@ -66,7 +66,53 @@ return {
         -- pickers = {}
 
         pickers = {},
-        defaults = { layout_config = { horizontal = { preview_width = 0.5 } } },
+        defaults = {
+          layout_config = { horizontal = { preview_width = 0.5 } },
+          mappings = {
+            i = {
+              ['<CR>'] = function(prompt_bufnr)
+                local actions = require 'telescope.actions'
+                local action_state = require 'telescope.actions.state'
+                local picker = action_state.get_current_picker(prompt_bufnr)
+                local multi_selections = picker:get_multi_selection()
+
+                if #multi_selections > 1 then
+                  actions.close(prompt_bufnr)
+                  for _, entry in ipairs(multi_selections) do
+                    if entry.path or entry.filename then
+                      local file_path = entry.path or entry.filename
+                      vim.cmd('ClaudeCodeAdd ' .. vim.fn.fnameescape(file_path))
+                    end
+                  end
+                  vim.cmd('ClaudeCodeFocus')
+                else
+                  actions.select_default(prompt_bufnr)
+                end
+              end,
+            },
+            n = {
+              ['<CR>'] = function(prompt_bufnr)
+                local actions = require 'telescope.actions'
+                local action_state = require 'telescope.actions.state'
+                local picker = action_state.get_current_picker(prompt_bufnr)
+                local multi_selections = picker:get_multi_selection()
+
+                if #multi_selections > 1 then
+                  actions.close(prompt_bufnr)
+                  for _, entry in ipairs(multi_selections) do
+                    if entry.path or entry.filename then
+                      local file_path = entry.path or entry.filename
+                      vim.cmd('ClaudeCodeAdd ' .. vim.fn.fnameescape(file_path))
+                    end
+                  end
+                  vim.cmd('ClaudeCodeFocus')
+                else
+                  actions.select_default(prompt_bufnr)
+                end
+              end,
+            },
+          },
+        },
 
         extensions = {
           ['ui-select'] = {

@@ -86,6 +86,6 @@ vim.keymap.set('n', '\\', '<C-w>sgd', { noremap = true, silent = true })
 
 -- LSP
 --
-vim.keymap.set('n', '<leader>e', function()
+vim.keymap.set('n', 'E', function()
   vim.diagnostic.open_float(nil, { scope = 'line' })
-end)
+end, { desc = 'See LSP output' })

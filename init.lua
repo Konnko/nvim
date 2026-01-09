@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -320,6 +320,8 @@ require('lazy').setup({
       -- Document existing key chains
       spec = {
         { '<leader>f', group = '[F]ind' },
+        { '<leader>s', group = 'AI/Opencode' },
+        { '<leader>a', group = 'AI/ClaudeCode' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>g', group = '[G]it' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
@@ -607,6 +609,25 @@ vim.opt.fillchars = {
 }
 
 if vim.g.neovide then
-  vim.o.guifont = 'TX-02:h18'
+  vim.o.guifont = 'RobotoMono Nerd Font Mono:h18'
+  -- vim.o.guifont = 'TX-02:h18'
   vim.g.neovide_fullscreen = true
+
+  -- Paste in terminal mode (Cmd+V)
+  vim.keymap.set('t', '<D-v>', function()
+    local clipboard = vim.fn.getreg '+'
+    local escaped = vim.api.nvim_replace_termcodes(clipboard, true, true, true)
+    vim.api.nvim_feedkeys(escaped, 't', false)
+  end, { desc = 'Paste in terminal' })
+
+  -- Paste in other modes
+  vim.keymap.set({ 'n', 'i', 'v', 'c' }, '<D-v>', '"+p', { desc = 'Paste' })
+
+  -- Word navigation with Option+arrows in terminal
+  vim.keymap.set('t', '<A-Left>', '<Esc>b', { desc = 'Word left' })
+  vim.keymap.set('t', '<A-Right>', '<Esc>f', { desc = 'Word right' })
+
+  -- Line navigation with Cmd+arrows in terminal
+  vim.keymap.set('t', '<D-Left>', '<C-a>', { desc = 'Line start' })
+  vim.keymap.set('t', '<D-Right>', '<C-e>', { desc = 'Line end' })
 end

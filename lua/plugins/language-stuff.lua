@@ -10,7 +10,7 @@ return {
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
         local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] and vim.g.disable_autoformat then
+        if disable_filetypes[vim.bo[bufnr].filetype] or vim.g.disable_autoformat then
           return nil
         else
           return {
@@ -21,7 +21,7 @@ return {
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        elixir = { 'rustywind' },
+        elixir = { 'mix', 'rustywind' },
         javascript = { 'rustywind', 'prettierd' },
         typescript = { 'rustywind', 'prettierd' },
         javascriptreact = { 'prettierd' },
