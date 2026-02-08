@@ -56,15 +56,15 @@ return {
       }
 
       -- Override the highlight groups with my colors
-      for i, hex_color in ipairs(my_rainbow_colors) do
-        if i <= #rainbow_hl_groups then
-          vim.api.nvim_set_hl(0, rainbow_hl_groups[i], { fg = hex_color, bold = true })
-          -- Example: vim.api.nvim_set_hl(0, rainbow_hl_groups[i], { fg = hex_color, bold = true })
-        else
-          print 'Info: Defined more custom colors than default rainbow highlight group names.'
-          break
-        end
-      end
+      -- for i, hex_color in ipairs(my_rainbow_colors) do
+      --   if i <= #rainbow_hl_groups then
+      --     vim.api.nvim_set_hl(0, rainbow_hl_groups[i], { fg = hex_color, bold = true })
+      --     -- Example: vim.api.nvim_set_hl(0, rainbow_hl_groups[i], { fg = hex_color, bold = true })
+      --   else
+      --     print 'Info: Defined more custom colors than default rainbow highlight group names.'
+      --     break
+      --   end
+      -- end
     end,
   },
   { -- Add indentation guides even on blank lines

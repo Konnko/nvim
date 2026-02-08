@@ -12,23 +12,11 @@ map('v', 'X', '"_X', blackholeOptions)
 map('n', 'x', '"_x', blackholeOptions)
 map('n', 'X', '"_X', blackholeOptions)
 
--- Auto-require all keybind files in this directory
--- Leap Plugin Mappings
-local leapOpts = { desc = 'Leap forward' }
-map('n', 's', '<Plug>(leap-forward)', leapOpts)
-map('x', 's', '<Plug>(leap-forward)', leapOpts)
-
-leapOpts = { desc = 'Leap backward' }
-map('n', 'S', '<Plug>(leap-backward)', leapOpts)
-map('x', 'S', '<Plug>(leap-backward)', leapOpts)
-
-leapOpts = { desc = 'Leap from window' }
-map('n', 'gs', '<Plug>(leap-from-window)', leapOpts)
-
 -- Open mini.files with current dir in focus
 map('n', '<leader>o', function()
-  MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
-  MiniFiles.reveal_cwd()
+  local mf = require 'mini.files'
+  mf.open(vim.api.nvim_buf_get_name(0), false)
+  mf.reveal_cwd()
 end, { desc = 'Files' })
 
 map('n', '<leader>c', ':bd<CR>', { desc = '[C]lose buffer' })
