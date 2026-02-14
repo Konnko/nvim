@@ -3,7 +3,7 @@
 --
 -- See the kickstart.nvim README for more information
 return {
-  { 'akinsho/bufferline.nvim', version = '*', dependencies = 'nvim-tree/nvim-web-devicons' },
+  -- { 'akinsho/bufferline.nvim', version = '*', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
   { 'akinsho/toggleterm.nvim', version = '*', config = true },
   {
     'nvim-lualine/lualine.nvim',
@@ -14,11 +14,6 @@ return {
         section_separators = { left = '', right = '' },
       },
     },
-  },
-  {
-    'windwp/nvim-autopairs',
-    event = 'InsertEnter',
-    opts = {},
   },
   {
     'Konnko/rainbow-delimiters.nvim',
@@ -101,25 +96,5 @@ return {
 
       hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
     end,
-  },
-  {
-    'kdheepak/lazygit.nvim',
-    lazy = true,
-    cmd = {
-      'LazyGit',
-      'LazyGitConfig',
-      'LazyGitCurrentFile',
-      'LazyGitFilter',
-      'LazyGitFilterCurrentFile',
-    },
-    -- optional for floating window border decoration
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
-    -- setting the keybinding for LazyGit with 'keys' is recommended in
-    -- order to load the plugin when the command is run for the first time
-    keys = {
-      { '<leader>gl', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
-    },
   },
 }

@@ -1,6 +1,5 @@
 local map = vim.keymap.set
 local blackholeOptions = { silent = true }
-vim.opt.swapfile = false
 -- Shortcut to use blackhole register by default
 
 map('v', 'c', '"_c', blackholeOptions)
@@ -19,9 +18,39 @@ map('n', '<leader>o', function()
   mf.reveal_cwd()
 end, { desc = 'Files' })
 
-map('n', '<leader>c', ':bd<CR>', { desc = '[C]lose buffer' })
-map('n', '<leader>q', ':q<CR>', { desc = '[Q]uit buffer' })
-map('n', '<leader>w', ':w<CR>', { desc = '[W]rite' })
+map('n', '<leader>c', function()
+  local cur_win = vim.api.nvim_get_current_win()
+  local cur_buf = vim.api.nvim_get_current_buf()
+  -- Count other windows showing the same buffer
+  local same_buf_wins = 0
+  local other_file_wins = 0
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if win ~= cur_win then
+      local buf = vim.api.nvim_win_get_buf(win)
+      if buf == cur_buf then
+        same_buf_wins = same_buf_wins + 1
+      elseif vim.bo[buf].buflisted then
+        other_file_wins = other_file_wins + 1
+      end
+    end
+  end
+  if same_buf_wins > 0 then
+    -- Same buffer in another pane, just close window
+    vim.cmd 'close'
+  elseif other_file_wins > 0 then
+    -- Other file panes exist, close window + buffer
+    vim.cmd 'bd'
+  else
+    -- Last file pane, keep window open
+    local listed = vim.fn.getbufinfo { buflisted = 1 }
+    if #listed > 1 then
+      vim.cmd 'bprevious'
+    else
+      vim.cmd 'enew'
+    end
+    vim.api.nvim_buf_delete(cur_buf, { force = false })
+  end
+end, { desc = 'Close buffer' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -57,16 +86,21 @@ vim.keymap.set('n', '<leader>ta', '<cmd>AerialToggle<cr>', { desc = 'Toggle aeri
 vim.keymap.set('n', '<leader>tt', ':ToggleTerm size=80 dir=git_dir direction=vertical<CR>', { desc = 'ToggleTerm' })
 
 -- TERMINAL OVERRIDES
-function _G.set_terminal_keymaps()
-  local opts = { buffer = 0 }
+vim.api.nvim_create_autocmd('TermOpen', {
+  callback = function()
+    local opts = { buffer = 0 }
+    vim.keymap.set('t', ';;', [[<C-\><C-n>]], opts)
+    vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+    vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+    vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+    vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+    vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+  end,
+})
 
-  vim.keymap.set('t', ';;', [[<C-\><C-n>]], opts)
-  vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
-  vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
-  vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
-  vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
-  vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
-end
+-- RESIZE PANES
+vim.keymap.set('n', '<C-,>', '<C-w>4<', { desc = 'Make pane narrower' })
+vim.keymap.set('n', '<C-.>', '<C-w>4>', { desc = 'Make pane wider' })
 
 -- QUICK SPLIT GD
 vim.keymap.set('n', '|', '<C-w>vgd', { noremap = true, silent = true })

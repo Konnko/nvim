@@ -161,6 +161,9 @@ vim.o.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
+-- Disable swap files
+vim.o.swapfile = false
+
 -- Indentation settings
 vim.o.expandtab = true -- Use spaces instead of tabs
 vim.o.shiftwidth = 2 -- Number of spaces for each indentation
@@ -255,7 +258,6 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  { 'NMAC427/guess-indent.nvim', opts = {} }, -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -274,23 +276,6 @@ require('lazy').setup({
   --        end,
   --    }
   --
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`.
-  --
-  -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -311,19 +296,18 @@ require('lazy').setup({
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.o.timeoutlen
-      delay = 0,
+      delay = 200,
       icons = {
         mappings = vim.g.have_nerd_font,
       },
 
       -- Document existing key chains
       spec = {
-        { '<leader>f', group = '[F]ind' },
+        { '<leader>f', group = 'Find' },
         { '<leader>s', group = 'AI/Opencode' },
         { '<leader>a', group = 'AI/ClaudeCode' },
-        { '<leader>t', group = '[T]oggle' },
-        { '<leader>g', group = '[G]it' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>t', group = 'Toggle' },
+        { '<leader>g', group = 'Git', mode = { 'n', 'v' } },
       },
     },
   },
@@ -452,74 +436,6 @@ require('lazy').setup({
     end,
   },
 
-  -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
-  { -- Collection of various small independent plugins/modules
-    'nvim-mini/mini.nvim',
-    config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
-      --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
-
-      require('mini.files').setup {
-        mappings = {
-          close = 'q',
-          go_in = 'l',
-          go_in_plus = '<Right>',
-          go_out = '<Left>',
-          go_out_plus = 'H',
-          mark_goto = "'",
-          mark_set = 'm',
-          reset = '<BS>',
-          reveal_cwd = '@',
-          show_help = 'g?',
-          synchronize = '=',
-          trim_left = '<',
-          trim_right = '>',
-        },
-      }
-
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      --
-      -- local statusline = require 'mini.statusline'
-      -- -- set use_icons to true if you have a Nerd Font
-      -- statusline.setup { use_icons = vim.g.have_nerd_font }
-      --
-      -- -- You can configure sections in the statusline by overriding their
-      -- -- default behavior. For example, here we set the section for
-      -- -- cursor location to LINE:COLUMN
-      -- ---@diagnostic disable-next-line: duplicate-set-field
-      -- statusline.section_location = function()
-      --   return '%2l:%-2v'
-      -- end
-
-      -- Starter screen with recent files
-      require('mini.sessions').setup {
-        autoread = true,
-        autowrite = true,
-      }
-      local starter = require 'mini.starter'
-      starter.setup {
-        items = {
-          starter.sections.recent_files(10, false),
-          starter.sections.recent_files(10, true),
-          starter.sections.builtin_actions(),
-        },
-        header = '',
-        footer = '',
-      }
-
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
-    end,
-  },
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -584,8 +500,6 @@ vim.api.nvim_create_user_command('FormatToggle', function()
   end
 end, {})
 
-vim.cmd 'autocmd! TermOpen term://* lua set_terminal_keymaps()'
-
 vim.keymap.set('n', 'K', function()
   vim.lsp.buf.hover {
     border = 'rounded',
@@ -605,30 +519,4 @@ vim.opt.fillchars = {
   eob = ' ', -- end of buffer
 }
 
-if vim.g.neovide then
-  vim.o.guifont = 'RobotoMono Nerd Font Mono:h18'
-  -- vim.o.guifont = 'TX-02:h18'
-  vim.g.neovide_fullscreen = true
-
-  -- Paste in terminal mode (Cmd+V)
-  vim.keymap.set('t', '<D-v>', function()
-    local clipboard = vim.fn.getreg '+'
-    local escaped = vim.api.nvim_replace_termcodes(clipboard, true, true, true)
-    vim.api.nvim_feedkeys(escaped, 't', false)
-  end, { desc = 'Paste in terminal' })
-
-  -- Paste in normal/visual mode
-  vim.keymap.set({ 'n', 'v' }, '<D-v>', '"+p', { desc = 'Paste' })
-  -- Paste in insert mode
-  vim.keymap.set('i', '<D-v>', '<C-r>+', { desc = 'Paste' })
-  -- Paste in command-line mode (/ search, : commands)
-  vim.keymap.set('c', '<D-v>', '<C-r>+', { desc = 'Paste' })
-
-  -- Word navigation with Option+arrows in terminal
-  vim.keymap.set('t', '<A-Left>', '<Esc>b', { desc = 'Word left' })
-  vim.keymap.set('t', '<A-Right>', '<Esc>f', { desc = 'Word right' })
-
-  -- Line navigation with Cmd+arrows in terminal
-  vim.keymap.set('t', '<D-Left>', '<C-a>', { desc = 'Line start' })
-  vim.keymap.set('t', '<D-Right>', '<C-e>', { desc = 'Line end' })
-end
+require 'neovide'
