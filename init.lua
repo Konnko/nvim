@@ -500,6 +500,22 @@ require('lazy').setup({
       --   return '%2l:%-2v'
       -- end
 
+      -- Starter screen with recent files
+      require('mini.sessions').setup {
+        autoread = true,
+        autowrite = true,
+      }
+      local starter = require 'mini.starter'
+      starter.setup {
+        items = {
+          starter.sections.recent_files(10, false),
+          starter.sections.recent_files(10, true),
+          starter.sections.builtin_actions(),
+        },
+        header = '',
+        footer = '',
+      }
+
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
