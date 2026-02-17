@@ -2,20 +2,47 @@ return {
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     branch = 'main',
+    lazy = false,
     -- build = ':TSUpdate',
     init = function()
-      -- The main branch stores queries under runtime/, which lazy.nvim
-      -- doesn't add to rtp automatically. Prepend it so Neovim can find
-      -- highlights.scm and friends for every language.
       vim.opt.runtimepath:prepend(vim.fn.stdpath 'data' .. '/lazy/nvim-treesitter/runtime')
-    end,
-    config = function()
-      local filetypes = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'elixir', 'heex', 'eex' }
-      require('nvim-treesitter').install(filetypes)
+
+      local installing = {}
       vim.api.nvim_create_autocmd('FileType', {
-        pattern = filetypes,
-        callback = function()
-          vim.treesitter.start()
+        callback = function(ev)
+          local ok, ts = pcall(require, 'nvim-treesitter')
+          if not ok then return end
+          local ts_config = require 'nvim-treesitter.config'
+
+          local lang = vim.treesitter.language.get_lang(vim.bo[ev.buf].filetype)
+          if not lang then return end
+
+          local installed = ts_config.get_installed()
+          if vim.list_contains(installed, lang) then
+            if pcall(vim.treesitter.start, ev.buf) then vim.bo[ev.buf].syntax = 'off' end
+            return
+          end
+
+          if installing[lang] then return end
+          local available = ts_config.get_available()
+          if not vim.list_contains(available, lang) then return end
+
+          installing[lang] = true
+          local task = ts.install(lang)
+          task:await(function(err)
+            installing[lang] = nil
+            if err then return end
+            vim.schedule(function()
+              for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype ~= '' then
+                  local buf_lang = vim.treesitter.language.get_lang(vim.bo[buf].filetype)
+                  if buf_lang == lang then
+                    if pcall(vim.treesitter.start, buf) then vim.bo[buf].syntax = 'off' end
+                  end
+                end
+              end
+            end)
+          end)
         end,
       })
     end,
