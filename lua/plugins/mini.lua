@@ -27,19 +27,27 @@ return {
         },
       }
 
-      -- Sessions
+      -- Sessions (auto-save per directory, like AstroNvim)
       require('mini.sessions').setup {
         autoread = false,
-        autowrite = true,
+        autowrite = false,
       }
+
+      -- Auto-save a session named after the cwd on exit (git projects only)
+      vim.api.nvim_create_autocmd('VimLeavePre', {
+        callback = function()
+          if vim.bo.filetype == 'ministarter' then return end
+          if vim.fn.isdirectory(vim.fn.getcwd() .. '/.git') == 0 then return end
+          local cwd = vim.fn.fnamemodify(vim.fn.getcwd(), ':t')
+          MiniSessions.write(cwd, { force = true })
+        end,
+      })
 
       -- Starter screen
       local starter = require 'mini.starter'
       starter.setup {
         items = {
-          starter.sections.sessions(),
-          starter.sections.recent_files(10, false),
-          starter.sections.recent_files(10, true),
+          starter.sections.sessions(5, true),
           starter.sections.builtin_actions(),
         },
         header = '',
@@ -80,7 +88,6 @@ return {
           warn = { pattern = '%f[%w]()WARN()%f[%W]', group = 'MiniHipatternsHack' },
         },
       }
-
     end,
   },
 }

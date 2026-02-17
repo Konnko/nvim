@@ -103,8 +103,8 @@ vim.keymap.set('n', '<C-,>', '<C-w>4<', { desc = 'Make pane narrower' })
 vim.keymap.set('n', '<C-.>', '<C-w>4>', { desc = 'Make pane wider' })
 
 -- QUICK SPLIT GD
-vim.keymap.set('n', '|', '<C-w>vgd', { noremap = true, silent = true })
-vim.keymap.set('n', '\\', '<C-w>sgd', { noremap = true, silent = true })
+vim.keymap.set('n', '|', '<C-w>v', { noremap = true, silent = true })
+vim.keymap.set('n', '\\', '<C-w>s', { noremap = true, silent = true })
 
 -- LSP
 --
