@@ -2,6 +2,27 @@
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
+-- Shared rainbow colors used by both rainbow-delimiters and indent-blankline
+local rainbow_colors = {
+  { hl = 'RainbowDelimiterRed', fg = '#BD93F9' }, -- Purple
+  { hl = 'RainbowDelimiterOrange', fg = '#FFA07A' }, -- Orange
+  { hl = 'RainbowDelimiterYellow', fg = '#F1FA8C' }, -- Yellow
+  { hl = 'RainbowDelimiterGreen', fg = '#50FA7B' }, -- Green
+  { hl = 'RainbowDelimiterBlue', fg = '#FF6B6B' }, -- Red/Coral
+  { hl = 'RainbowDelimiterViolet', fg = '#FF79C6' }, -- Pink
+  { hl = 'RainbowDelimiterCyan', fg = '#A6E22E' }, -- Cyan
+}
+
+local rainbow_hl_groups = vim.tbl_map(function(c)
+  return c.hl
+end, rainbow_colors)
+
+local function apply_rainbow_hl()
+  for _, c in ipairs(rainbow_colors) do
+    vim.api.nvim_set_hl(0, c.hl, { fg = c.fg })
+  end
+end
+
 return {
   -- { 'akinsho/bufferline.nvim', version = '*', dependencies = 'nvim-tree/nvim-web-devicons', opts = {} },
   { 'akinsho/toggleterm.nvim', version = '*', config = true },
@@ -21,79 +42,22 @@ return {
     main = 'rainbow-delimiters.setup',
     opts = {
       query = {
-        [''] = 'rainbow-blocks',
+        elixir = 'rainbow-blocks',
       },
     },
-    config = function(plugin, opts)
-      -- The 'main' key usually handles the basic setup call.
-      -- If 'main' wasn't actually calling setup, you might need to call it here:
-      -- require("rainbow-delimiters.setup").setup(opts)
-      -- However, with 'main' defined, this config function typically runs *after* it.
-
-      local my_rainbow_colors = {
-        '#FF6B6B', -- Bright Red/Coral
-        '#FFA07A', -- Bright Orange (Light Salmon)
-        '#F1FA8C', -- Bright Yellow (Dracula Yellow)
-        '#50FA7B', -- Bright Green (Dracula Green)
-        '#82AAFF', -- Bright Blue
-        '#BD93F9', -- Bright Purple (Dracula Purple)
-        '#8BE9FD', -- Bright Cyan (Dracula Cyan)
-      }
-
-      local rainbow_hl_groups = {
-        'RainbowDelimiterRed',
-        'RainbowDelimiterOrange',
-        'RainbowDelimiterYellow',
-        'RainbowDelimiterGreen',
-        'RainbowDelimiterBlue',
-        'RainbowDelimiterViolet',
-        'RainbowDelimiterCyan',
-      }
-
-      -- Override the highlight groups with my colors
-      -- for i, hex_color in ipairs(my_rainbow_colors) do
-      --   if i <= #rainbow_hl_groups then
-      --     vim.api.nvim_set_hl(0, rainbow_hl_groups[i], { fg = hex_color, bold = true })
-      --     -- Example: vim.api.nvim_set_hl(0, rainbow_hl_groups[i], { fg = hex_color, bold = true })
-      --   else
-      --     print 'Info: Defined more custom colors than default rainbow highlight group names.'
-      --     break
-      --   end
-      -- end
+    config = function(_, opts)
+      require('rainbow-delimiters.setup').setup(opts)
+      vim.api.nvim_create_autocmd('ColorScheme', { callback = apply_rainbow_hl })
+      vim.defer_fn(apply_rainbow_hl, 0)
     end,
   },
-  { -- Add indentation guides even on blank lines
+  {
     'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help ibl`
     main = 'ibl',
-    opts = {},
     config = function()
-      local highlight = {
-        'RainbowRed',
-        'RainbowYellow',
-        'RainbowBlue',
-        'RainbowOrange',
-        'RainbowGreen',
-        'RainbowViolet',
-        'RainbowCyan',
-      }
       local hooks = require 'ibl.hooks'
-      -- create the highlight groups in the highlight setup hook, so they are reset
-      -- every time the colorscheme changes
-      hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-        vim.api.nvim_set_hl(0, 'RainbowRed', { fg = '#E06C75' })
-        vim.api.nvim_set_hl(0, 'RainbowYellow', { fg = '#E5C07B' })
-        vim.api.nvim_set_hl(0, 'RainbowBlue', { fg = '#61AFEF' })
-        vim.api.nvim_set_hl(0, 'RainbowOrange', { fg = '#D19A66' })
-        vim.api.nvim_set_hl(0, 'RainbowGreen', { fg = '#98C379' })
-        vim.api.nvim_set_hl(0, 'RainbowViolet', { fg = '#C678DD' })
-        vim.api.nvim_set_hl(0, 'RainbowCyan', { fg = '#56B6C2' })
-      end)
-
-      vim.g.rainbow_delimiters = { highlight = highlight }
-      require('ibl').setup { scope = { highlight = highlight } }
-
+      hooks.register(hooks.type.HIGHLIGHT_SETUP, apply_rainbow_hl)
+      require('ibl').setup { scope = { highlight = rainbow_hl_groups } }
       hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
     end,
   },
