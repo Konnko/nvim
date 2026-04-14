@@ -43,6 +43,7 @@ return {
     opts = {
       query = {
         elixir = 'rainbow-blocks',
+        lua = 'rainbow-blocks',
       },
     },
     config = function(_, opts)
